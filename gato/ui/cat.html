@@ -7,7 +7,7 @@
   html, body { margin: 0; background: transparent; overflow: hidden; user-select: none;
     font-family: "Segoe UI", system-ui, sans-serif; }
   #cat { width: 120px; height: 110px; display: block; margin: 4px auto 0; cursor: pointer; touch-action: none; }
-  #bubble { margin: 2px 6px 0; padding: 7px 10px; border-radius: 12px;
+  #bubble { box-sizing: border-box; width: 228px; margin: 2px auto 0; padding: 7px 10px; border-radius: 12px;
     background: rgba(18, 18, 18, 0.92); color: #eee; font-size: 12.5px; line-height: 1.35;
     border: 1px solid var(--eye-soft, rgba(255, 204, 0, 0.4)); opacity: 0; transform: translateY(-4px);
     transition: opacity .2s, transform .2s; pointer-events: none;
@@ -63,7 +63,14 @@
   };
   cat.applyConfig = (c) => {
     cat.setSkin(c.skin);
+    cat.setAura(c.aura);
+    // El tamaño escala el lienzo; la ventana ya alcanza para el máximo y la región recorta lo que sobra
+    const scale = c.tamano || 1;
+    canvas.style.width = 120 * scale + 'px';
+    canvas.style.height = 110 * scale + 'px';
+    cat.resize();
     document.documentElement.style.setProperty('--eye-soft', cat.skin.ojo_izq + '66');
+    updateRegion();
   };
   window.cat = cat;
 

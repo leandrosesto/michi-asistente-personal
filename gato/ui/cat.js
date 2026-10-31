@@ -59,6 +59,7 @@
       this.c = canvas;
       this.ctx = canvas.getContext('2d');
       this.setSkin(opts.skin);
+      this.aura = opts.aura !== false;
       this.state = 'idle';
       this.v = { ...STATES.idle, lookX: 0, lookY: 0, twL: 0, twR: 0 };
       this.amp = 0;
@@ -87,6 +88,7 @@
       this.skin = { ...DEFAULT_SKIN, ...(skin || {}) };
       this.g = SHAPES[this.skin.forma] || SHAPES.gomita;
     }
+    setAura(on) { this.aura = !!on; }
     setState(s) {
       if (!STATES[s]) return;
       if (s === 'happy' && this.state !== 'happy') this.hopAt = performance.now();
@@ -343,12 +345,16 @@
         ctx.beginPath(); this.squircle(b.x0 - g, b.y0 - g, b.x1 + g, b.y1 + g, b.r + g); ctx.stroke();
       }
 
-      // Silueta plana; un halo apenas visible del color de los ojos la despega del fondo
+      // Silueta plana. Con aura, un halo del color de los ojos la despega del fondo:
+      // primera pasada con sombra, segunda sin ella para tapar la parte interna
       ctx.fillStyle = s.pelaje;
-      ctx.shadowColor = rgba(s.ojo_izq, 0.22);
-      ctx.shadowBlur = 8;
-      this.silhouettePath(); ctx.fill();
-      ctx.shadowBlur = 0;
+      this.silhouettePath();
+      if (this.aura) {
+        ctx.shadowColor = rgba(s.ojo_izq, 0.22);
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
       ctx.fill();
 
       this.drawPattern();

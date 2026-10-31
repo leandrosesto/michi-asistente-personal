@@ -68,6 +68,8 @@ DEFAULTS = {
     # Skin elegido y editado en la configuración (ver ui/skins.js); None = negro clásico
     "skin": None,
     "siempre_visible": True,
+    "aura": True,       # halo suave del color de los ojos alrededor de Michi
+    "tamano": 1.0,      # escala del dibujo, de 0.6 a 1.6
     "voz": "es-AR-ElenaNeural",
     "velocidad_voz": "+5%",
     "tono_voz": "+0Hz",

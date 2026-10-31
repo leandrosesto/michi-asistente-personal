@@ -26,7 +26,8 @@ log = logging.getLogger("gato")
 
 UI = Path(__file__).resolve().parent / "ui"
 # Tamaño lógico fijo (cambiarlo rompe la transparencia de WebView2). Lo visible se recorta con una región de Windows.
-WIN_SIZE = (240, 236)
+WIN_SIZE = (300, 300)  # alcanza para el tamaño máximo (160 %) más el globo de texto
+TAMANO_MIN, TAMANO_MAX = 0.6, 1.6
 user32 = ctypes.windll.user32
 gdi32 = ctypes.windll.gdi32
 gdi32.CreateRoundRectRgn.restype = ctypes.c_void_p
@@ -60,6 +61,13 @@ def make_glass(window, hwnd):
     for attr in (38, 2):  # DWMWA_SYSTEMBACKDROP_TYPE = NONE, DWMWA_NCRENDERING_POLICY = DISABLED
         value = ctypes.c_int(1)
         ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd, attr, ctypes.byref(value), 4)
+
+
+def clamp_size(value) -> float:
+    try:
+        return round(min(TAMANO_MAX, max(TAMANO_MIN, float(value))), 2)
+    except (TypeError, ValueError):
+        return 1.0
 
 
 def key_to_vk(name: str) -> int | None:
@@ -98,7 +106,13 @@ class Api:
         if dpr:
             self._app._scale = float(dpr)
             threading.Thread(target=self._app.on_page_ready, daemon=True).start()
-        return {k: self._app.cfg[k] for k in ("nombre", "skin")}
+        return {k: self._app.cfg[k] for k in ("nombre", "skin", "aura", "tamano")}
+
+    def preview_look(self, aura, tamano):
+        """Muestra en Michi el aura y el tamaño mientras se mueven los controles, sin guardar todavía."""
+        look = {**self.ready(), "aura": bool(aura), "tamano": clamp_size(tamano)}
+        self._app.preview_size = look["tamano"]
+        self._app.js(f"cat.applyConfig({json.dumps(look)})")
 
     def drag_start(self):
         self._app.drag_start()
@@ -153,6 +167,7 @@ class Assistant:
         self._drag = None
         self._hotkey = None
         self._scale = 1.0
+        self.preview_size = None  # tamaño de prueba mientras se mueve el control en Configurar
         self.hidden = False
         self.hide_after_reply = False
         self._dict_hook = None
@@ -256,7 +271,9 @@ class Assistant:
                 self.apply_on_top()
             cx, cy = cursor_pos()
             left, top, right, bottom = window_rect(self.hwnd)
-            hx, hy = (left + right) / 2, top + 72 * self._scale
+            # Centro de los ojos: 4 px de margen + 72 de los 110 px del dibujo, escalado por el tamaño
+            size = self.preview_size or self.cfg["tamano"]
+            hx, hy = (left + right) / 2, top + (4 + 72 * size) * self._scale
             dx, dy = cx - hx, cy - hy
             look = (round(dx / (abs(dx) + 250) * 1.6, 2), round(dy / (abs(dy) + 250) * 1.6, 2))
             if look != last:
@@ -410,7 +427,13 @@ class Assistant:
         self.settings_window = webview.create_window(
             f"Configurar a {self.cfg['nombre']}", url=(UI / "settings.html").as_uri(), js_api=self.api,
             width=600, height=760, min_size=(480, 500), background_color="#151515")
-        self.settings_window.events.closed += lambda: setattr(self, "settings_window", None)
+        self.settings_window.events.closed += self._settings_closed
+
+    def _settings_closed(self):
+        # Si se cerró sin guardar, Michi vuelve al aura y tamaño guardados
+        self.settings_window = None
+        self.preview_size = None
+        self.js(f"cat.applyConfig({json.dumps(self.api.ready())})")
 
     def save_settings(self, data):
         old_token = config.get_secret("TELEGRAM_BOT_TOKEN")
@@ -419,10 +442,12 @@ class Assistant:
         if "memoria" in data:
             self.brain.memory.set_facts(data.pop("memoria"))
         for k in ("nombre", "nombre_dueno", "genero", "skin", "siempre_visible", "voz", "velocidad_voz", "tono_voz", "atajo",
-                  "tecla_dictado", "cerebros",
+                  "tecla_dictado", "cerebros", "aura", "tamano",
                   "modelo_gemini", "modelo_groq", "gmail_usuario", "telegram_chat_id"):
             if k in data:
                 self.cfg[k] = data[k]
+        self.cfg["tamano"] = clamp_size(self.cfg["tamano"])
+        self.preview_size = None
         config.save(self.cfg)
         if "inicio_windows" in data:
             autostart.set_enabled(bool(data["inicio_windows"]))

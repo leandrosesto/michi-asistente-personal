@@ -68,6 +68,8 @@
     <span id="wrap_patron2" style="display:flex;gap:10px;align-items:center"><span class="no">segundo color</span><input type="color" id="sk_color_patron2"></span></div>
   <div class="row"><label>Ojos</label><input type="color" id="sk_ojo_izq"><input type="color" id="sk_ojo_der">
     <button class="mini" id="igualar">igualar los dos</button></div>
+  <div class="row"><label>Tamaño</label><input type="range" id="tamano" min="60" max="160" step="10"><span id="tamanov" class="no"></span></div>
+  <div class="row"><label>Aura</label><input type="checkbox" id="aura"><span class="no">brillo suave alrededor de Michi</span></div>
   <div class="row"><label>Siempre visible</label><input type="checkbox" id="siempre_visible"><span class="no">encima de todas las ventanas</span></div>
   <div class="hint" style="margin-top:0">Si le decís "Michi, escondete" se oculta; vuelve con el atajo o pidiéndoselo por Telegram.</div>
 
@@ -139,6 +141,15 @@
   }
   $('igualar').onclick = () => { skin = { ...skin, ojo_der: skin.ojo_izq, editado: true }; showSkin(); };
 
+  // Aura y tamaño se ven en vivo en Michi; si se cierra sin guardar, vuelve a como estaba
+  function previewLook() {
+    $('tamanov').textContent = $('tamano').value + '%';
+    cat.setAura($('aura').checked);
+    pywebview.api.preview_look($('aura').checked, $('tamano').value / 100);
+  }
+  $('tamano').oninput = previewLook;
+  $('aura').onchange = previewLook;
+
   // Galería: se arma recién la primera vez que se abre
   let galleryBuilt = false;
   $('preview').onclick = () => {
@@ -171,7 +182,8 @@
   $('preview').onmouseleave = () => cat.setState('idle');
 
   function collect() {
-    const d = { skin, siempre_visible: $('siempre_visible').checked, memoria: $('memoria').value.split('\n') };
+    const d = { skin, siempre_visible: $('siempre_visible').checked, memoria: $('memoria').value.split('\n'),
+                aura: $('aura').checked, tamano: $('tamano').value / 100 };
     for (const f of FIELDS) d[f] = $(f).value.trim();
     d.velocidad_voz = signed(+$('vel').value, '%');
     d.tono_voz = signed(+$('tono').value, 'Hz');
@@ -205,6 +217,10 @@
     $('cerebros').value = c.cerebros.join(',');
     $('inicio_windows').checked = c.inicio_windows;
     $('siempre_visible').checked = c.siempre_visible;
+    $('aura').checked = c.aura;
+    cat.setAura(c.aura);
+    $('tamano').value = Math.round(c.tamano * 100);
+    $('tamanov').textContent = $('tamano').value + '%';
     $('memoria').value = c.memoria.join('\n');
     // Un skin guardado puede venir incompleto (configuraciones viejas): se completa con el negro clásico
     skin = { ...SKINS[0], ...(c.skin || {}) };

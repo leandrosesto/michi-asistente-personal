@@ -55,6 +55,7 @@ Habla en **español rioplatense** (voseo y tono argentino), con una personalidad
 | Claude | Le deriva los pedidos complejos y te resume la respuesta en voz |
 | Celular por Telegram | Texto o audios desde Android o iPhone, con respuesta en nota de voz |
 | 11 skins editables | Forma, pelaje, patrón y color de cada ojo, con vista previa en vivo |
+| Tamaño y aura | Tamaño del 60 % al 160 % y aura (brillo alrededor) activable, con vista en vivo |
 | 26 voces | 4 rioplatenses (Argentina y Uruguay), una local instantánea y más acentos |
 | Siempre visible | Queda encima de las ventanas; "Michi, escondete" la oculta |
 | Arranque con Windows | Aparece sola al prender la PC (se puede desactivar) |
@@ -126,6 +127,7 @@ Para lo que pide más cabeza (redactar, planificar, explicar a fondo, código), 
 ## Personalización: skins y voces
 
 - **Skins:** en Configurar, tocá a Michi para ver la galería. Los 11 skins (negro clásico, naranja atigrado, siamés, persa, persa humo, azul ruso, calicó, esmoquin, blanco con ojos bicolor, atigrado gris y carey) se pueden modificar: forma (Gomita o Persa), pelaje, patrón y el color de **cada ojo** por separado.
+- **Tamaño y aura:** un control ajusta el tamaño de Michi del 60 % al 160 %, y el aura (el brillo suave del color de los ojos a su alrededor) se activa o desactiva. Los cambios se ven en vivo mientras los ajustás; si cerrás sin guardar, vuelve a como estaba.
 - **Voces:** **Daniela** (argentina, corre en tu PC, la más rápida y anda sin internet), **Elena y Tomás** (Argentina), **Valentina y Mateo** (Uruguay), más voces de Chile, México, Colombia, Perú, España y otras. Se ajustan la velocidad y el tono.
 - **Personalidad:** nombre, si es gata o gato y cómo te llama a vos.
 
