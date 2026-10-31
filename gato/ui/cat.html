@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Gato</title>
+<style>
+  html, body { margin: 0; background: transparent; overflow: hidden; user-select: none;
+    font-family: "Segoe UI", system-ui, sans-serif; }
+  #cat { width: 120px; height: 110px; display: block; margin: 4px auto 0; cursor: pointer; touch-action: none; }
+  #bubble { margin: 2px 6px 0; padding: 7px 10px; border-radius: 12px;
+    background: rgba(18, 18, 18, 0.92); color: #eee; font-size: 12.5px; line-height: 1.35;
+    border: 1px solid var(--eye-soft, rgba(255, 204, 0, 0.4)); opacity: 0; transform: translateY(-4px);
+    transition: opacity .2s, transform .2s; pointer-events: none;
+    display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+  #bubble.show { opacity: 1; transform: none; }
+  #bubble.user { color: #aaa; font-style: italic; }
+  #menu { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); display: none;
+    background: rgba(18, 18, 18, 0.96); border: 1px solid #333; border-radius: 10px; padding: 4px; min-width: 112px; }
+  #menu.show { display: block; }
+  #menu button { display: block; width: 100%; text-align: left; background: none; border: 0; color: #eee;
+    padding: 5px 9px; font: inherit; font-size: 12.5px; border-radius: 6px; cursor: pointer; }
+  #menu button:hover { background: rgba(255, 255, 255, 0.1); }
+</style>
+</head>
+<body>
+<canvas id="cat"></canvas>
+<div id="bubble"></div>
+<div id="menu">
+  <button data-a="hablar">Hablar</button>
+  <button data-a="configurar">Configurar</button>
+  <button data-a="salir">Salir</button>
+</div>
+<script src="cat.js"></script>
+<script>
+  const canvas = document.getElementById('cat');
+  const bubble = document.getElementById('bubble');
+  const menu = document.getElementById('menu');
+  const cat = new Cat(canvas);
+  let bubbleTimer = null, menuOpen = false;
+
+  // Solo el gato, el globo y el menú forman parte de la ventana; el resto deja pasar los clics al escritorio
+  function updateRegion() {
+    if (!window.pywebview) return;
+    const rects = [];
+    const add = (el, r) => {
+      const b = el.getBoundingClientRect();
+      rects.push([b.left - 2, b.top - 2, b.width + 4, b.height + 4, r]);
+    };
+    add(canvas, 0);
+    if (bubble.classList.contains('show')) add(bubble, 14);
+    if (menuOpen) add(menu, 12);
+    pywebview.api.set_regions(rects);
+  }
+  window.updateRegion = updateRegion;
+
+  cat.say = (text, kind) => {
+    bubble.textContent = text;
+    bubble.className = 'show' + (kind === 'user' ? ' user' : '');
+    updateRegion();
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => { bubble.className = ''; setTimeout(updateRegion, 220); },
+                             Math.min(20000, 4000 + text.length * 70));
+  };
+  cat.applyConfig = (c) => {
+    cat.setSkin(c.skin);
+    document.documentElement.style.setProperty('--eye-soft', cat.skin.ojo_izq + '66');
+  };
+  window.cat = cat;
+
+  function showMenu(on) {
+    menuOpen = on;
+    menu.classList.toggle('show', on);
+    updateRegion();
+  }
+
+  window.addEventListener('pywebviewready', async () => {
+    cat.applyConfig(await pywebview.api.ready(window.devicePixelRatio || 1));
+  });
+
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    if (menuOpen) showMenu(false);
+    canvas.setPointerCapture(e.pointerId);
+    pywebview.api.drag_start();
+  });
+  canvas.addEventListener('pointerup', async (e) => {
+    if (e.button !== 0) return;
+    const moved = await pywebview.api.drag_end();
+    if (!moved) pywebview.api.on_click();
+  });
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showMenu(!menuOpen);
+  });
+  menu.addEventListener('click', (e) => {
+    const a = e.target.dataset.a;
+    if (!a) return;
+    showMenu(false);
+    pywebview.api.menu(a);
+  });
+  window.addEventListener('blur', () => { if (menuOpen) showMenu(false); });
+</script>
+</body>
+</html>

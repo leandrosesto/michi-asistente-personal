@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Configuración</title>
+<style>
+  :root { --bg: #151515; --panel: #1f1f1f; --line: #333; --text: #e8e8e8; --muted: #9a9a9a; --accent: #ffcc00; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 13.5px "Segoe UI", system-ui, sans-serif; }
+  main { padding: 18px 20px 80px; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 22px 0 8px; }
+  .hero { display: flex; gap: 16px; align-items: center; }
+  #preview { width: 132px; height: 120px; background: radial-gradient(circle at 50% 55%, #2b2b2b, #151515 70%); border-radius: 14px;
+    cursor: pointer; transition: transform .15s; }
+  #preview:hover { transform: scale(1.04); }
+  .tap { color: var(--accent); font-size: 12px; margin-top: 6px; }
+  #galeria { display: none; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; margin: 14px 0 4px; }
+  #galeria.open { display: grid; }
+  .tile { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 6px 4px 8px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 12px; color: var(--muted); }
+  .tile:hover { border-color: #555; color: var(--text); }
+  .tile.sel { border-color: var(--accent); color: var(--text); }
+  .tile canvas { width: 96px; height: 88px; }
+  .mini { background: none; border: 0; color: var(--accent); font: inherit; font-size: 12px; cursor: pointer; padding: 0; }
+  .row { display: flex; gap: 10px; align-items: center; margin: 8px 0; }
+  .row > label { width: 130px; color: var(--muted); flex-shrink: 0; }
+  input[type=text], input[type=password], select { flex: 1; background: var(--panel); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font: inherit; min-width: 0; }
+  input[type=color] { width: 44px; height: 32px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 2px; }
+  input[type=range] { flex: 1; }
+  textarea { width: 100%; background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 10px; font: inherit; line-height: 1.5; resize: vertical; }
+  .ok { color: #7bd88f; font-size: 12px; }
+  .no { color: var(--muted); font-size: 12px; }
+  a { color: var(--accent); cursor: pointer; text-decoration: none; font-size: 12px; white-space: nowrap; }
+  .hint { color: var(--muted); font-size: 12px; margin: 4px 0 0 140px; }
+  footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 12px 20px; background: #111; border-top: 1px solid var(--line);
+    display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+  footer span { margin-right: auto; color: var(--muted); font-size: 12px; }
+  .btn { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; font: inherit; cursor: pointer; }
+  .btn.primary { background: var(--accent); color: #111; border-color: var(--accent); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <canvas id="preview" title="Elegir skin"></canvas>
+    <div>
+      <h1>Tu gato</h1>
+      <div class="no" id="skin_nombre"></div>
+      <div class="tap">Tocá al gato para ver los skins</div>
+    </div>
+  </div>
+  <div id="galeria"></div>
+
+  <h2>Apariencia</h2>
+  <div class="row"><label>Nombre</label><input type="text" id="nombre"></div>
+  <div class="row"><label>Es</label><select id="genero"><option value="gata">Gata</option><option value="gato">Gato</option></select></div>
+  <div class="row"><label>Tu nombre</label><input type="text" id="nombre_dueno" placeholder="cómo querés que te llame"></div>
+  <div class="row"><label>Forma</label>
+    <select id="sk_forma"><option value="gomita">Gomita</option><option value="persa">Persa (peludo)</option></select></div>
+  <div class="row"><label>Pelaje</label><input type="color" id="sk_pelaje"></div>
+  <div class="row"><label>Patrón</label>
+    <select id="sk_patron"><option value="liso">Liso</option><option value="atigrado">Atigrado</option><option value="siames">Siamés (puntas oscuras)</option>
+      <option value="calico">Calicó (manchas de dos colores)</option><option value="esmoquin">Esmoquin (pechera blanca)</option><option value="carey">Carey (moteado)</option></select></div>
+  <div class="row" id="row_patron"><label>Color del patrón</label><input type="color" id="sk_color_patron">
+    <span id="wrap_patron2" style="display:flex;gap:10px;align-items:center"><span class="no">segundo color</span><input type="color" id="sk_color_patron2"></span></div>
+  <div class="row"><label>Ojos</label><input type="color" id="sk_ojo_izq"><input type="color" id="sk_ojo_der">
+    <button class="mini" id="igualar">igualar los dos</button></div>
+  <div class="row"><label>Siempre visible</label><input type="checkbox" id="siempre_visible"><span class="no">encima de todas las ventanas</span></div>
+  <div class="hint" style="margin-top:0">Si le decís "Michi, escondete" se oculta; vuelve con el atajo o pidiéndoselo por Telegram.</div>
+
+  <h2>Voz</h2>
+  <div class="row"><label>Voz</label><select id="voz"></select></div>
+  <div class="row"><label>Velocidad</label><input type="range" id="vel" min="-20" max="30" step="5"><span id="velv" class="no"></span></div>
+  <div class="row"><label>Tono</label><input type="range" id="tono" min="-30" max="30" step="5"><span id="tonov" class="no"></span></div>
+  <div class="hint">Tono más agudo para un gato tierno, más grave para uno serio. La voz local no cambia de tono.</div>
+  <div class="row"><label>Atajo para hablar</label><input type="text" id="atajo"></div>
+  <div class="row"><label>Tecla de dictado</label><input type="text" id="tecla_dictado"></div>
+  <div class="hint">Mantenela apretada, hablá y soltala: escribe lo que dijiste donde esté el cursor.</div>
+  <div class="row"><label>Iniciar con Windows</label><input type="checkbox" id="inicio_windows"><span class="no">el gato aparece solo al prender la PC</span></div>
+
+  <h2>Cerebro</h2>
+  <div class="row"><label>Preferencia</label>
+    <select id="cerebros"><option value="groq,gemini">Groq primero (más rápido), Gemini de respaldo</option><option value="gemini,groq">Gemini primero, Groq de respaldo</option></select>
+  </div>
+  <div class="row"><label>Clave Gemini</label><input type="password" id="GEMINI_API_KEY" placeholder="sin cambios"><span id="s_GEMINI_API_KEY"></span><a data-url="https://aistudio.google.com/apikey">conseguir</a></div>
+  <div class="row"><label>Modelo Gemini</label><input type="text" id="modelo_gemini"></div>
+  <div class="row"><label>Clave Groq</label><input type="password" id="GROQ_API_KEY" placeholder="sin cambios"><span id="s_GROQ_API_KEY"></span><a data-url="https://console.groq.com/keys">conseguir</a></div>
+  <div class="row"><label>Modelo Groq</label><input type="text" id="modelo_groq"></div>
+  <div class="hint">Groq también se usa para entender tu voz (Whisper), así que conviene cargar las dos claves.</div>
+
+  <h2>Claude (opcional)</h2>
+  <div class="row"><label>Clave de Anthropic</label><input type="password" id="ANTHROPIC_API_KEY" placeholder="sin cambios"><span id="s_ANTHROPIC_API_KEY"></span><a data-url="https://platform.claude.com/settings/keys">conseguir</a></div>
+  <div class="hint">Para pedidos pesados ("preguntale a Claude..."). Sin clave usa Claude Code si está instalado, o abre claude.ai con el pedido escrito.</div>
+
+  <h2>Mails (Gmail)</h2>
+  <div class="row"><label>Tu Gmail</label><input type="text" id="gmail_usuario" placeholder="vos@gmail.com"></div>
+  <div class="row"><label>Contraseña de app</label><input type="password" id="GMAIL_APP_PASSWORD" placeholder="sin cambios"><span id="s_GMAIL_APP_PASSWORD"></span><a data-url="https://myaccount.google.com/apppasswords">crear</a></div>
+  <div class="hint">Solo lectura de mails no leídos. Para escribir, el gato te deja el borrador abierto y vos lo enviás.</div>
+
+  <h2>Memoria</h2>
+  <textarea id="memoria" rows="6" placeholder="Todavía no sabe nada de vos. Contale cosas o decile &quot;acordate que...&quot;"></textarea>
+  <div class="hint" style="margin-left:0">Un dato por línea. Lo aprende sola cuando le contás cosas; acá podés corregir o borrar lo que quieras.</div>
+
+  <h2>Celular (Telegram)</h2>
+  <div class="row"><label>Token del bot</label><input type="password" id="TELEGRAM_BOT_TOKEN" placeholder="sin cambios"><span id="s_TELEGRAM_BOT_TOKEN"></span><a data-url="https://t.me/BotFather">BotFather</a></div>
+  <div class="row"><label>Tu chat id</label><input type="text" id="telegram_chat_id" placeholder="el bot te lo dice al escribirle"></div>
+</main>
+<footer>
+  <span id="msg"></span>
+  <button class="btn" id="probar">Probar voz</button>
+  <button class="btn primary" id="guardar">Guardar</button>
+</footer>
+<script src="skins.js"></script>
+<script src="cat.js"></script>
+<script>
+  const SECRETS = ['GEMINI_API_KEY', 'GROQ_API_KEY', 'GMAIL_APP_PASSWORD', 'TELEGRAM_BOT_TOKEN', 'ANTHROPIC_API_KEY'];
+  const FIELDS = ['nombre', 'genero', 'nombre_dueno', 'voz', 'atajo', 'tecla_dictado', 'modelo_gemini', 'modelo_groq', 'gmail_usuario', 'telegram_chat_id'];
+  const SKIN_FIELDS = ['forma', 'pelaje', 'patron', 'color_patron', 'color_patron2', 'ojo_izq', 'ojo_der'];
+  const $ = (id) => document.getElementById(id);
+  const cat = new Cat($('preview'));
+  const msg = (t) => { $('msg').textContent = t; setTimeout(() => $('msg').textContent = '', 4000); };
+  let skin = { ...SKINS[0] };
+
+  // Skin actual <-> campos editables
+  function showSkin() {
+    for (const f of SKIN_FIELDS) $('sk_' + f).value = skin[f];
+    const custom = skin.editado && skin.nombre !== 'Personalizado' ? ' (personalizado)' : '';
+    $('skin_nombre').textContent = 'Skin: ' + skin.nombre + custom;
+    $('row_patron').style.display = skin.patron === 'liso' ? 'none' : 'flex';
+    $('wrap_patron2').style.display = ['calico', 'carey'].includes(skin.patron) ? 'flex' : 'none';
+    cat.setSkin(skin);
+    document.querySelectorAll('.tile').forEach(t => t.classList.toggle('sel', t.dataset.id === skin.id && !skin.editado));
+  }
+  for (const f of SKIN_FIELDS) {
+    $('sk_' + f).addEventListener('input', () => { skin = { ...skin, [f]: $('sk_' + f).value, editado: true }; showSkin(); });
+  }
+  $('igualar').onclick = () => { skin = { ...skin, ojo_der: skin.ojo_izq, editado: true }; showSkin(); };
+
+  // Galería: se arma recién la primera vez que se abre
+  let galleryBuilt = false;
+  $('preview').onclick = () => {
+    const g = $('galeria');
+    // Primero se muestra: los lienzos toman su tamaño al crearse y oculta mediría cero
+    g.classList.toggle('open');
+    if (!galleryBuilt) {
+      galleryBuilt = true;
+      for (const s of SKINS) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        tile.dataset.id = s.id;
+        const cv = document.createElement('canvas');
+        tile.append(cv, s.nombre);
+        g.appendChild(tile);
+        const mini = new Cat(cv, { skin: s });
+        tile.onmouseenter = () => mini.setState('happy');
+        tile.onmouseleave = () => mini.setState('idle');
+        tile.onclick = () => { skin = { ...s }; showSkin(); g.classList.remove('open'); };
+      }
+    }
+    showSkin();
+  };
+  $('vel').oninput = () => $('velv').textContent = ($('vel').value > 0 ? '+' : '') + $('vel').value + '%';
+  $('tono').oninput = () => $('tonov').textContent = +$('tono').value === 0 ? 'normal'
+    : ($('tono').value > 0 ? 'más agudo ' : 'más grave ') + Math.abs($('tono').value);
+  const signed = (v, unit) => (v >= 0 ? '+' : '') + v + unit;
+  document.querySelectorAll('a[data-url]').forEach(a => a.onclick = () => pywebview.api.open_url(a.dataset.url));
+  $('preview').onmouseenter = () => cat.setState('happy');
+  $('preview').onmouseleave = () => cat.setState('idle');
+
+  function collect() {
+    const d = { skin, siempre_visible: $('siempre_visible').checked, memoria: $('memoria').value.split('\n') };
+    for (const f of FIELDS) d[f] = $(f).value.trim();
+    d.velocidad_voz = signed(+$('vel').value, '%');
+    d.tono_voz = signed(+$('tono').value, 'Hz');
+    d.cerebros = $('cerebros').value.split(',');
+    d.inicio_windows = $('inicio_windows').checked;
+    d.secretos = {};
+    for (const s of SECRETS) if ($(s).value.trim()) d.secretos[s] = $(s).value.trim();
+    return d;
+  }
+
+  function showStatus(st) {
+    for (const s of SECRETS) {
+      $('s_' + s).innerHTML = st[s] ? '<span class="ok">guardada</span>' : '<span class="no">vacía</span>';
+      $(s).value = '';
+    }
+  }
+
+  window.addEventListener('pywebviewready', async () => {
+    const c = await pywebview.api.get_settings();
+    for (const [group, voices] of c.voces) {
+      const og = document.createElement('optgroup');
+      og.label = group;
+      for (const [id, label] of voices) og.appendChild(new Option(label, id));
+      $('voz').appendChild(og);
+    }
+    for (const f of FIELDS) $(f).value = c[f] || '';
+    $('vel').value = parseInt(c.velocidad_voz) || 0;
+    $('vel').oninput();
+    $('tono').value = parseInt(c.tono_voz) || 0;
+    $('tono').oninput();
+    $('cerebros').value = c.cerebros.join(',');
+    $('inicio_windows').checked = c.inicio_windows;
+    $('siempre_visible').checked = c.siempre_visible;
+    $('memoria').value = c.memoria.join('\n');
+    // Un skin guardado puede venir incompleto (configuraciones viejas): se completa con el negro clásico
+    skin = { ...SKINS[0], ...(c.skin || {}) };
+    if (c.skin && !c.skin.id) skin = { ...skin, nombre: 'Personalizado', editado: true };
+    showStatus(c.secretos);
+    showSkin();
+  });
+
+  $('probar').onclick = () => {
+    const d = collect();
+    pywebview.api.test_voice(d.voz, d.velocidad_voz, d.tono_voz, d.nombre);
+  };
+  $('guardar').onclick = async () => {
+    const r = await pywebview.api.save_settings(collect());
+    showStatus(r.secretos);
+    msg('Guardado.');
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+// Skins prearmados. Cada uno es editable desde la configuración; lo que se guarda es la copia con los cambios.
+// forma: gomita | persa. patron: liso | atigrado | siames | calico | esmoquin | carey
+window.SKINS = [
+  { id: 'negro', nombre: 'Negro clásico', forma: 'gomita', pelaje: '#141414', patron: 'liso',
+    color_patron: '#2c2c2c', color_patron2: '#2c2c2c', ojo_izq: '#ffcc00', ojo_der: '#ffcc00' },
+  { id: 'naranja', nombre: 'Naranja atigrado', forma: 'gomita', pelaje: '#e8892f', patron: 'atigrado',
+    color_patron: '#b4531b', color_patron2: '#b4531b', ojo_izq: '#9be15d', ojo_der: '#9be15d' },
+  { id: 'siames', nombre: 'Siamés', forma: 'gomita', pelaje: '#efe3cf', patron: 'siames',
+    color_patron: '#4a3428', color_patron2: '#4a3428', ojo_izq: '#4fa8ff', ojo_der: '#4fa8ff' },
+  { id: 'persa', nombre: 'Persa', forma: 'persa', pelaje: '#f4f1ec', patron: 'liso',
+    color_patron: '#e2dccf', color_patron2: '#e2dccf', ojo_izq: '#ff9a3c', ojo_der: '#ff9a3c' },
+  { id: 'persa_humo', nombre: 'Persa humo', forma: 'persa', pelaje: '#5f6268', patron: 'liso',
+    color_patron: '#7a7e85', color_patron2: '#7a7e85', ojo_izq: '#ffb13d', ojo_der: '#ffb13d' },
+  { id: 'ruso', nombre: 'Azul ruso', forma: 'gomita', pelaje: '#7d8796', patron: 'liso',
+    color_patron: '#6a7482', color_patron2: '#6a7482', ojo_izq: '#6fe08a', ojo_der: '#6fe08a' },
+  { id: 'calico', nombre: 'Calicó', forma: 'gomita', pelaje: '#f5f1ea', patron: 'calico',
+    color_patron: '#e8892f', color_patron2: '#2a2522', ojo_izq: '#ffb52e', ojo_der: '#ffb52e' },
+  { id: 'esmoquin', nombre: 'Esmoquin', forma: 'gomita', pelaje: '#161616', patron: 'esmoquin',
+    color_patron: '#f4f4f4', color_patron2: '#f4f4f4', ojo_izq: '#7dff6a', ojo_der: '#7dff6a' },
+  { id: 'blanco', nombre: 'Blanco ojos bicolor', forma: 'gomita', pelaje: '#f6f6f6', patron: 'liso',
+    color_patron: '#e6e6e6', color_patron2: '#e6e6e6', ojo_izq: '#3d8bff', ojo_der: '#ffcc00' },
+  { id: 'gris_atigrado', nombre: 'Atigrado gris', forma: 'gomita', pelaje: '#8e8a85', patron: 'atigrado',
+    color_patron: '#4d4a47', color_patron2: '#4d4a47', ojo_izq: '#ffd34d', ojo_der: '#ffd34d' },
+  { id: 'carey', nombre: 'Carey', forma: 'gomita', pelaje: '#2b2320', patron: 'carey',
+    color_patron: '#c8692a', color_patron2: '#e9a35a', ojo_izq: '#ffb52e', ojo_der: '#ffb52e' },
+];

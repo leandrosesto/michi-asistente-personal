@@ -1,0 +1,14 @@
+# Entorno y cachés
+.venv/
+__pycache__/
+.webview/
+
+# Datos personales: nunca se suben (las claves viven en el Administrador de credenciales de Windows)
+config.json
+memoria.json
+gato.log
+.env
+
+# Archivos pesados o generados
+voces/
+muestras/

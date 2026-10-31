@@ -1,0 +1,36 @@
+[project]
+name = "michi-asistente-personal"
+version = "1.0.0"
+description = "Michi: asistente personal de voz con IA para Windows, gratis y en español rioplatense. Gata de escritorio con cerebro en la nube, dictado, memoria y control desde el celular por Telegram."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Leandro Sesto" }]
+keywords = [
+    "asistente de voz", "asistente personal", "inteligencia artificial", "español", "rioplatense", "windows",
+    "desktop pet", "voice assistant", "dictado por voz", "groq", "gemini", "claude", "whisper", "piper", "telegram bot",
+]
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pywebview>=5.3",
+    "edge-tts>=7.0",
+    "openai>=1.60",
+    "sounddevice>=0.5",
+    "numpy>=2.0",
+    "miniaudio>=1.61",
+    "keyboard>=0.13",
+    "keyring>=25.0",
+    "requests>=2.32",
+    "ddgs>=9.0",
+    "piper-tts>=1.3",
+    "anthropic>=1.0",
+]
+
+[project.urls]
+Repository = "https://github.com/leandrosesto/michi-asistente-personal"
+
+[project.optional-dependencies]
+# Transcripción 100% local (sin Groq). Descarga ~500 MB de modelo la primera vez.
+local = ["faster-whisper>=1.1"]
+
+[tool.uv]
+package = false
